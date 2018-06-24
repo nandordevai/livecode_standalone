@@ -22,16 +22,6 @@ kick = nil
 use_midi_defaults port: "iac_driver_bus_1", channel: 1
 
 live_loop :drums do
-  with_fx :level, amp: vol1 do
-    kick = sample drums, "kick"
-    sleep 1
-  end
-end
-
-live_loop :volume1 do
-  use_real_time
-  cc, val = sync "/midi/launch_control_xl/2/9/control_change"
-  if cc == 77
-    vol1 = val / 127.0 * 2
-  end
+  kick = sample drums, "kick"
+  sleep 1
 end
