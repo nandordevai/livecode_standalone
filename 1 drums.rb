@@ -1,27 +1,39 @@
-kick = :c2
-rim = :cs2
-snare = :d2
-clap = :ds2
-snare_b = :e2
-kick_b = :f2
-hh_closed = :fs2
-tom_low = :g2
-hh_closed2 = :gs2
-tom_low2 = :a2
-hh_open = :as2
-tom_mid = :b2
-tom_hi = :c3
-crash = :cs3
-crash2 = :d3
-ride = :ds3
-
 drums = "/Users/nandi/Music/Samples/Roland PB-300 Rhythm Plus"
-vol1 = 1
-kick = nil
+# hh_open
+# hh_closed
+# kick
+# kick2
+# ride
+# snare
+# wood
 
 use_midi_defaults port: "iac_driver_bus_1", channel: 1
 
-live_loop :drums do
-  kick = sample drums, "kick"
-  sleep 1
+live_loop :drums, sync: :one do
+  with_fx :reverb, room: 0.25 do
+    with_fx :compressor do
+      # stop
+      hh = (ring
+        1, 1, 1, 1,
+        0, 1, 1, 0)
+      hh_cutoff = 95
+      hh_open_vol = 2
+      sample drums, "kick", cutoff: 110
+      if hh.tick == 1
+        sample drums, "hh_closed", cutoff: hh_cutoff
+      else
+        sample drums, "hh_open", amp: hh_open_vol, cutoff: hh_cutoff
+      end
+      sleep 0.5
+      with_fx :echo, decay: 0.5, phase: 0.125 do
+        sample drums, "snare", cutoff: 115, amp: 0.8
+      end
+      if hh.tick == 1
+        sample drums, "hh_closed", cutoff: hh_cutoff
+      else
+        sample drums, "hh_open", amp: hh_open_vol, cutoff: hh_cutoff
+      end
+      sleep 0.5
+    end
+  end
 end
